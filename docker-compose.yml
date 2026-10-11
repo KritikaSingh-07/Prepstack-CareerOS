@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    ports:
+      - "5000:5000"
+    environment:
+      PORT: 5000
+      MONGO_URI: mongodb://mongo:27017/prepstack-careeros
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your shell or a .env file}
+      CLIENT_ORIGIN: http://localhost:5000
+      PREPSTACK_BASE_URL: ${PREPSTACK_BASE_URL:-http://localhost:3000}
+      PREPSTACK_API_URL: ${PREPSTACK_API_URL:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+
+volumes:
+  mongo-data:
